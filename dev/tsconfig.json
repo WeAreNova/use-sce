@@ -1,6 +1,11 @@
 {
   "extends": "../tsconfig.json",
   "compilerOptions": {
+    "baseUrl": "src",
+    "paths": {
+      "client": ["client"],
+      "server": ["server"]
+    },
     "jsx": "react-jsx",
     "lib": ["es6", "dom"],
     "noImplicitAny": true,

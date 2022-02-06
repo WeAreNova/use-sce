@@ -4,6 +4,7 @@ import { LocalizationProvider } from "@mui/lab";
 import MomentAdapter from "@mui/lab/AdapterMoment";
 import { Box, createTheme, CssBaseline, IconButton, TableContainer, ThemeProvider } from "@mui/material";
 import DataTable, { setDefaultCurrency } from "@wearenova/mui-data-table";
+import useSSE from "@wearenova/use-sse";
 import axios from "axios";
 import Cookies from "js-cookie";
 import React, { useCallback, useEffect, useState } from "react";
@@ -26,14 +27,12 @@ function App({ darkMode: darkModeProp }: AppProps) {
   }, [darkMode]);
 
   const handleChange = useCallback(async () => {
-    const res = await axios.get("/api/data");
+    const res = await axios.get<User[]>("http://localhost:3000/api/data");
     setData(res.data);
-    return res;
+    return res.data;
   }, []);
 
-  useEffect(() => {
-    handleChange();
-  }, [handleChange]);
+  useSSE(() => handleChange(), [handleChange], "data");
 
   return (
     <ThemeProvider
