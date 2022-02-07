@@ -10,7 +10,7 @@
     "start:rollup": "npm run build -- --watch",
     "start:dev": "npx rimraf dev/build && wait-on build/index.js && npm start -w dev",
     "start": "concurrently --handle-input --names \"rollup,react\" -c \"green,blue\" \"npm run start:rollup\" \"npm run start:dev\"",
-    "build": "npx rimraf build && rollup --config ./rollup.config.ts"
+    "build": "npx rimraf build && rollup --config ./rollup.config.js"
   },
   "dependencies": {
     "react": "^17.0.1",
