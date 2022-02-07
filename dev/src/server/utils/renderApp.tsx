@@ -1,7 +1,7 @@
 import { CacheProvider } from "@emotion/react";
 import createEmotionServer from "@emotion/server/create-instance";
 import { CssBaseline } from "@mui/material";
-import { createContext, SSEProvider } from "@wearenova/use-sse/server";
+import { collectData, extractData } from "@wearenova/use-sse/server";
 import App from "client/App";
 import createEmotionCache from "createEmotionCache";
 import type Express from "express";
@@ -23,20 +23,20 @@ const renderApp = async (req: Express.Request, res: Express.Response) => {
   const cache = createEmotionCache();
   const { extractCriticalToChunks, constructStyleTagsFromChunks } = createEmotionServer(cache);
 
-  const sseContext = createContext();
-  const markup = renderToString(
-    <SSEProvider value={sseContext}>
-      <CacheProvider value={cache}>
-        <StaticRouter location={req.url}>
-          <CssBaseline />
-          <App darkMode={req.cookies.darkMode === "true"} />
-        </StaticRouter>
-      </CacheProvider>
-    </SSEProvider>,
-  );
-  const data = await sseContext.collectData();
-  const chunks = extractCriticalToChunks(markup),
-    css = constructStyleTagsFromChunks(chunks);
+  const chunks = extractCriticalToChunks(
+      renderToString(
+        await collectData(
+          <CacheProvider value={cache}>
+            <StaticRouter location={req.url}>
+              <CssBaseline />
+              <App darkMode={req.cookies.darkMode === "true"} />
+            </StaticRouter>
+          </CacheProvider>,
+        ),
+      ),
+    ),
+    css = constructStyleTagsFromChunks(chunks),
+    data = extractData();
   return `
     <!doctype html>
     <html lang="en-GB">
@@ -49,7 +49,7 @@ const renderApp = async (req: Express.Request, res: Express.Response) => {
           ${cssLinksFromAssets("client")}
       </head>
       <body>
-          <div id="root">${markup}</div>
+          <div id="root">${chunks.html}</div>
           ${jsScriptTagsFromAssets("client", "defer", "crossorigin")}
           <script> window.__PRELOADED_STATE__ = ${JSON.stringify(data)} </script>
       </body>

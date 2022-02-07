@@ -4,13 +4,14 @@ import morgan from "morgan";
 import getData from "./utils/getData";
 import renderApp from "./utils/renderApp";
 
+const data = getData();
+
 const server = express()
   .disable("x-powered-by")
   .use(morgan("dev"))
   .use(express.static(process.env.RAZZLE_PUBLIC_DIR!))
   .use(cookieParser())
   .get("/api/data", (_req, res) => {
-    const data = getData();
     res.status(200).send(data);
   })
   .get("/*", async (req, res) => {

@@ -4,7 +4,7 @@ import { LocalizationProvider } from "@mui/lab";
 import MomentAdapter from "@mui/lab/AdapterMoment";
 import { Box, createTheme, CssBaseline, IconButton, TableContainer, ThemeProvider } from "@mui/material";
 import DataTable, { setDefaultCurrency } from "@wearenova/mui-data-table";
-import useSSE from "@wearenova/use-sse";
+import useSSE, { usePreloadedState } from "@wearenova/use-sse";
 import axios from "axios";
 import Cookies from "js-cookie";
 import React, { useCallback, useEffect, useState } from "react";
@@ -18,7 +18,8 @@ setDefaultCurrency("USD");
 
 function App({ darkMode: darkModeProp }: AppProps) {
   const [darkMode, setDarkMode] = useState(darkModeProp);
-  const [data, setData] = useState<User[]>([]);
+  const preloadedData = usePreloadedState<{ data: User[] }>("data");
+  const [data, setData] = useState<User[]>(preloadedData ?? []);
 
   const toggleDarkMode = useCallback(() => setDarkMode((currDarkMode) => !currDarkMode), []);
 

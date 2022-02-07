@@ -26,7 +26,7 @@
     "@mui/icons-material": "^5.3.1",
     "@mui/lab": "^5.0.0-alpha.67",
     "@mui/material": "^5.4.0",
-    "@wearenova/mui-data-table": "^2.0.0",
+    "@wearenova/mui-data-table": "^2.1.3",
     "@wearenova/use-sse": "file:../build/",
     "axios": "^0.25.0",
     "clsx": "^1.0.0",
@@ -58,7 +58,6 @@
     "razzle-dev-utils": "^4.2.14",
     "react-scripts": "^5.0.0",
     "type-fest": "^2.5.1",
-    "typescript": "^4.4.4",
     "web-vitals": "^1.0.1",
     "webpack": "^5.68.0",
     "webpack-dev-server": "^4.7.4"
