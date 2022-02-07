@@ -1,9 +1,12 @@
 {
-  "extends": "../tsconfig.json",
   "compilerOptions": {
+    "target": "ES6",
     "baseUrl": "src",
-    "declaration": true
+    "declaration": true,
+    "outDir": "../build",
+    "jsx": "react",
+    "allowSyntheticDefaultImports": true
   },
-  "include": ["src/index.ts"],
+  "include": ["src/**/*"],
   "exclude": []
 }
