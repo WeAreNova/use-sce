@@ -3,6 +3,7 @@ import { useServerContext } from "server";
 import type { BaseData, BrowserContextValue, Effect } from "types";
 
 const BrowserContext = createContext<BrowserContextValue<any>>({ data: {} });
+BrowserContext.displayName = "SCEContext";
 /**
  * A functional component to handle the set-up of the browser preloaded-state context.
  *

@@ -6,6 +6,7 @@ interface ServerContextValue<T extends BaseData> extends BrowserContextValue<T> 
   requests: Promise<unknown>[];
 }
 const ServerContext = React.createContext<ServerContextValue<any>>({ requests: [], data: {} });
+ServerContext.displayName = "SCEContext";
 /**
  * A functional component to handle the set-up of the server preloaded-state context.
  *
