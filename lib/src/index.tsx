@@ -1,6 +1,6 @@
 import React, { createContext, ProviderProps, useContext, useEffect, useMemo } from "react";
 import { useServerContext } from "server";
-import type { BaseData, BrowserContextValue as BrowserContextValue, Effect } from "types";
+import type { BaseData, BrowserContextValue, Effect } from "types";
 
 const BrowserContext = createContext<BrowserContextValue<any>>({ data: {} });
 /**
