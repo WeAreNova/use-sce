@@ -1,18 +1,18 @@
 {
   "name": "@wearenova/use-sce",
   "version": "1.0.0-alpha.1",
-  "description": "A React effect hook for use with server-side rendering to make preloading state a breeze.",
+  "description": "A super-charged React `useEffect` hook for use with server-side rendering to make preloading state a breeze.",
   "source": "src/index.ts",
   "types": "lib/index.d.ts",
   "main": "lib/index.js",
-  "homepage": "https://github.com/WeAreNova/use-sse#readme",
+  "homepage": "https://github.com/WeAreNova/use-sce#readme",
   "repository": {
     "type": "git",
-    "url": "https://github.com/WeAreNova/use-sse",
+    "url": "https://github.com/WeAreNova/use-sce",
     "directory": "lib"
   },
   "bugs": {
-    "url": "https://github.com/WeAreNova/use-sse/issues"
+    "url": "https://github.com/WeAreNova/use-sce/issues"
   },
   "scripts": {
     "test": "echo \"Error: no test specified\" && exit 1"
