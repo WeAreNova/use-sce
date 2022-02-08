@@ -1,7 +1,7 @@
 import { CacheProvider } from "@emotion/react";
 import createEmotionServer from "@emotion/server/create-instance";
 import { CssBaseline } from "@mui/material";
-import { collectData, extractData } from "@wearenova/use-sce/server";
+import { collectData } from "@wearenova/use-sce/server";
 import App from "client/App";
 import createEmotionCache from "createEmotionCache";
 import type Express from "express";
@@ -23,6 +23,7 @@ const renderApp = async (req: Express.Request, _res: Express.Response) => {
   const cache = createEmotionCache();
   const { extractCriticalToChunks, constructStyleTagsFromChunks } = createEmotionServer(cache);
 
+  const data = {};
   const chunks = extractCriticalToChunks(
       renderToString(
         await collectData(
@@ -32,11 +33,11 @@ const renderApp = async (req: Express.Request, _res: Express.Response) => {
               <App darkMode={req.cookies.darkMode === "true"} />
             </StaticRouter>
           </CacheProvider>,
+          data,
         ),
       ),
     ),
-    css = constructStyleTagsFromChunks(chunks),
-    data = extractData();
+    css = constructStyleTagsFromChunks(chunks);
   return `
     <!doctype html>
     <html lang="en-GB">
