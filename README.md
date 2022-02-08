@@ -247,7 +247,7 @@ A functional component to handle the set-up of the browser preloaded-state conte
 A function to render the react tree and collect data from the super-charged effects on the server.
 
 ```tsx
-const html = ReactDOMServer.renderToString(await collectData(reactTree, data));
+const html = ReactDOMServer.renderToString(await collectData<T>(reactTree, data));
 ```
 
 | param       | type           | required? | description                                                              |
