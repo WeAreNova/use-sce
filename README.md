@@ -9,13 +9,28 @@
 
 A super-charged React `useEffect` hook for use with server-side rendering to make preloading state a breeze.
 
+<!-- [![npm (scoped)](https://img.shields.io/npm/v/@wearenova/use-sce?logo=npm&style=for-the-badge)](https://www.npmjs.com/package/@wearenova/use-sce) [![npm](https://img.shields.io/npm/dm/@wearenova/use-sce?logo=npm&style=for-the-badge)](https://www.npmjs.com/package/@wearenova/use-sce) ![GitHub](https://img.shields.io/github/license/WeAreNova/use-sce?style=for-the-badge) [![GitHub Workflow Status](https://img.shields.io/github/workflow/status/WeAreNova/use-sce/Build%20and%20Publish?logo=github&style=for-the-badge)](https://github.com/WeAreNova/use-sce) -->
+
 </div>
 
-`useSCEffect` can stand for "use super-charged effect", "use server-compatible effect" or whatever else you would like it to.
+**What does `useSCEffect` stand for?**<br/>
+Well, it could mean "use super-charged effect", "use server-compatible effect" or whatever else you would like it to.
 
-The `useSCEffect` hook is a wrapper around React's `useEffect` hook that runs the provided effect on the server as well as standard in the browser.
+The `useSCEffect` hook is a wrapper around React's `useEffect` hook that runs the provided effect on the server as well as you would expect it to in the browser.
 
-It provides an easy way to manage preloaded state on the server and in the browser.
+It provides an easy way to create and manage preloaded state on the server and in the browser.
+
+- [Installation](#installation)
+- [Usage](#usage)
+  - [1. Use the `useSCEffect` hook](#1-use-the-usesceffect-hook)
+  - [2. Setup the server](#2-setup-the-server)
+  - [3. Setup the client](#3-setup-the-client)
+- [API - Browser](#api---browser)
+  - [useSCEffect](#usesceffect)
+  - [usePreloadedState](#usepreloadedstate)
+  - [BrowserSCE](#browsersce)
+- [API - Server](#api---server)
+  - [collectData](#collectdata)
 
 #### Features
 
@@ -79,8 +94,7 @@ const preloadedData: { data: User[] } = { data: [] }; // you can provide any def
 const html = ReactDOMServer.renderToString(
   await collectData(
     <StaticRouter location={req.url}>
-      <CssBaseline />
-      <App darkMode={req.cookies.darkMode === "true"} />
+      <App />
     </StaticRouter>,
     preloadedData, // pass in the `preloadedData` object so it can be populated with the results from the effects
   ),
@@ -100,7 +114,7 @@ res.status(200).send(`
       <head>
           <meta http-equiv="X-UA-Compatible" content="IE=edge" />
           <meta charset="utf-8" />
-          <title>UseSSE Development</title>
+          <title>UseSSE</title>
           <meta name="viewport" content="width=device-width, initial-scale=1">
           ${css}
       </head>
@@ -124,7 +138,7 @@ The line:
 
 is where the preloaded data is stringified, injected into the `window` object in the browser and then accessible via `window.__PRELOADED_STATE__`.
 
-#### 3. Setup the client context
+#### 3. Setup the client
 
 You then need to hydrate the preloaded data client-side.
 
@@ -163,17 +177,21 @@ import useSCEffect from "@wearenova/use-sce";
 const preloadedState = usePreloadedState<{ data: User[] }>();
 const [data, setData] = useState<User[]>(preloadedState.data || []);
 
+....
+
 // or
-const preloadedUsers = usePreloadedState<{ data: User[] }>("data"); // to get a value from the preloaded state
+const preloadedUsers = usePreloadedState<{ data: User[] }>("data"); // to get a specific value from the preloaded state
 const [data, setData] = useState<User[]>(preloadedUsers || []);
 
+....
+
+// or
 const handleChange = useCallback(async function () {
   const res = await axios.get<User[]>("http://localhost:3000/api/data");
   setData(res.data);
   return res.data;
 }, []);
 
-// or
 const preloadedUsers = useSCEffect(
   async function () {
     return handleChange();
@@ -181,12 +199,15 @@ const preloadedUsers = useSCEffect(
   [handleChange],
   "data", // the key location of where to store the return value of the effect
 );
+
 const [data, setData] = useState<User[]>(preloadedUsers || []);
 ```
 
 To follow the style of React's `useEffect` hook, it is recommended to use the `usePreloadedState` hook instead of the return value of the `useSCEffect` hook. But you are welcome to do any of the methods above.
 
 The `usePreloadedState` hook can be used for the preloaded data in the browser or on the server without having to worry about the `SCEContext` (the internal context for the `use-sce` package).
+
+---
 
 ### API - Browser
 
@@ -204,7 +225,7 @@ useSCEffect<T>(effect, deps, key);
 | `deps`   | `any[]`                    | yes       | `effect` will only activate if one of the values in this list changes |
 | `key`    | `string`                   | no        | the key to store the result in the preloaded state                    |
 
-##### Returns
+**Returns**
 
 The `useSCEffect` hook returns `void` if `preloadedKey` is not provided, otherwise the result of the effect from the preloaded state.
 
@@ -220,7 +241,7 @@ const preloadedState = usePreloadedState<T>(key);
 | ----- | -------- | --------- | ------------------------------------------------------ |
 | `key` | `string` | no        | the key of the data to return from the preloaded state |
 
-##### Returns
+**Returns**
 
 If param `key` is provided, this hook will return the value at the given key in the preloaded state. Otherwise, it will return the entire preloaded state.
 
@@ -255,6 +276,6 @@ const html = ReactDOMServer.renderToString(await collectData<T>(reactTree, data)
 | `reactTree` | `ReactElement` | yes       | the react tree to render                                                 |
 | `data`      | `Partial<T>`   | yes       | the object to store the results of the rendered super-charged effects in |
 
-##### Returns
+**Returns**
 
 Returns the updated React Tree which includes the server `SCEContext` with the preloaded data.
