@@ -13,7 +13,11 @@ BrowserContext.displayName = "SCEContext";
 export function BrowserSCE<T extends BaseData>(props: ProviderProps<BrowserContextValue<T>>) {
   return <BrowserContext.Provider {...props} />;
 }
-
+/**
+ * A function that returns the SCEContext for the browser.
+ * @private use the `usePreloadedState` hook instead
+ * @returns the browser context value
+ */
 function useBrowserContext<T extends BaseData>() {
   return useContext<BrowserContextValue<T>>(BrowserContext);
 }
@@ -35,7 +39,12 @@ export function usePreloadedState<T extends BaseData>(
     [],
   );
 }
-
+/**
+ * A function to handle the effect server-side.
+ * @param effect the effect to run
+ * @param param1.context the context to add the data to
+ * @param param1.preloadedKey the key to store the result in the preloaded state
+ */
 async function serverSideEffect<T extends Effect<unknown>>(
   effect: T,
   { context, preloadedKey }: { context: BrowserContextValue; preloadedKey?: string },

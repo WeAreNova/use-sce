@@ -12,11 +12,11 @@ ServerContext.displayName = "SCEContext";
  *
  * This allows the preloaded state to be accessible via the `usePreloadedState` hook on the server.
  */
-export function ServerSCE<T extends BaseData>(props: ProviderProps<ServerContextValue<T>>) {
+function ServerSCE<T extends BaseData>(props: ProviderProps<ServerContextValue<T>>) {
   return <ServerContext.Provider {...props} />;
 }
 /**
- * A function that returns the SSEContext for the server.
+ * A function that returns the SCEContext for the server.
  * @private use the `usePreloadedState` hook instead
  * @returns the server-side context value
  */
