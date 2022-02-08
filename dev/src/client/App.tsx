@@ -4,7 +4,7 @@ import { LocalizationProvider } from "@mui/lab";
 import MomentAdapter from "@mui/lab/AdapterMoment";
 import { Box, createTheme, CssBaseline, IconButton, TableContainer, ThemeProvider } from "@mui/material";
 import DataTable, { setDefaultCurrency } from "@wearenova/mui-data-table";
-import useSSE, { usePreloadedState } from "@wearenova/use-sse";
+import useSCE, { usePreloadedState } from "@wearenova/use-sce";
 import axios from "axios";
 import Cookies from "js-cookie";
 import React, { useCallback, useEffect, useState } from "react";
@@ -33,7 +33,7 @@ function App({ darkMode: darkModeProp }: AppProps) {
     return res.data;
   }, []);
 
-  useSSE(() => handleChange(), [handleChange], "data");
+  useSCE(() => handleChange(), [handleChange], "data");
 
   return (
     <ThemeProvider

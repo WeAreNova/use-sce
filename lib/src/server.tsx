@@ -1,15 +1,15 @@
 import React, { ProviderProps, ReactElement, useContext } from "react";
 import { renderToString } from "react-dom/server";
-import type { BaseData, SSEContext } from "types";
+import type { BaseData, SCEContext } from "types";
 
 let data = {};
 
-interface ServerContext<T extends BaseData> extends SSEContext<T> {
+interface ServerContextValue<T extends BaseData> extends SCEContext<T> {
   requests: Promise<unknown>[];
 }
-const ServerSSEContext = React.createContext<ServerContext<any>>({ requests: [], data: {} });
-export function ServerSSEProvider<T extends BaseData>(props: ProviderProps<ServerContext<T>>) {
-  return <ServerSSEContext.Provider {...props} />;
+const ServerContext = React.createContext<ServerContextValue<any>>({ requests: [], data: {} });
+export function ServerSCE<T extends BaseData>(props: ProviderProps<ServerContextValue<T>>) {
+  return <ServerContext.Provider {...props} />;
 }
 /**
  * A function that returns the SSEContext for the server.
@@ -17,7 +17,7 @@ export function ServerSSEProvider<T extends BaseData>(props: ProviderProps<Serve
  * @returns the server-side context value
  */
 export function useServerContext<T extends BaseData>() {
-  return useContext<ServerContext<T>>(ServerSSEContext);
+  return useContext<ServerContextValue<T>>(ServerContext);
 }
 
 /**
@@ -30,10 +30,10 @@ export async function collectData<T extends BaseData>(tree: ReactElement): Promi
     requests: [],
     data: {} as T,
   };
-  renderToString(<ServerSSEProvider value={state}>{tree}</ServerSSEProvider>);
+  renderToString(<ServerSCE value={state}>{tree}</ServerSCE>);
   await Promise.all(state.requests);
   data = { ...state.data };
-  return <ServerSSEProvider value={state}>{tree}</ServerSSEProvider>;
+  return <ServerSCE value={state}>{tree}</ServerSCE>;
 }
 
 /**

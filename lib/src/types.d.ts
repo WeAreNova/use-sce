@@ -4,6 +4,6 @@ export interface BaseData {
   [key: string]: unknown;
 }
 
-export interface SSEContext<T extends BaseData = BaseData> {
+export interface SCEContext<T extends BaseData = BaseData> {
   data: T;
 }

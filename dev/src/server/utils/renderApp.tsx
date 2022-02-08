@@ -1,7 +1,7 @@
 import { CacheProvider } from "@emotion/react";
 import createEmotionServer from "@emotion/server/create-instance";
 import { CssBaseline } from "@mui/material";
-import { collectData, extractData } from "@wearenova/use-sse/server";
+import { collectData, extractData } from "@wearenova/use-sce/server";
 import App from "client/App";
 import createEmotionCache from "createEmotionCache";
 import type Express from "express";
@@ -19,7 +19,7 @@ const cssLinksFromAssets = (entrypoint: string) =>
 const jsScriptTagsFromAssets = (entrypoint: string, ...extra: string[]) =>
   assets[entrypoint]?.js?.map((asset) => `<script src="${asset}" ${extra.join(" ")}></script>`).join("") ?? "";
 
-const renderApp = async (req: Express.Request, res: Express.Response) => {
+const renderApp = async (req: Express.Request, _res: Express.Response) => {
   const cache = createEmotionCache();
   const { extractCriticalToChunks, constructStyleTagsFromChunks } = createEmotionServer(cache);
 

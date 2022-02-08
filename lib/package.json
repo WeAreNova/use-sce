@@ -1,10 +1,9 @@
 {
-  "name": "@wearenova/use-sse",
+  "name": "@wearenova/use-sce",
   "version": "1.0.0-alpha.1",
-  "description": "A React effect hook for use with Server-Side Rendering to allow easy creation of preloaded state.",
+  "description": "A React effect hook for use with server-side rendering to make preloading state a breeze.",
   "source": "src/index.ts",
   "types": "lib/index.d.ts",
-  "module": "lib/index.esm.js",
   "main": "lib/index.js",
   "homepage": "https://github.com/WeAreNova/use-sse#readme",
   "repository": {
@@ -37,7 +36,10 @@
     "react",
     "useEffect",
     "server-side-effect",
-    "preloadable-state"
+    "preloadable-state",
+    "preloaded-state",
+    "super-charged-effect",
+    "server-compatible-effect"
   ],
   "peerDependencies": {
     "react": "^16.8.0 || ^17.0.0",

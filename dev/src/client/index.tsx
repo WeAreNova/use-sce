@@ -1,6 +1,6 @@
 import { CacheProvider } from "@emotion/react";
 import { CssBaseline } from "@mui/material";
-import { ClientSSEProvider } from "@wearenova/use-sse";
+import { BrowserSCE } from "@wearenova/use-sce";
 import Cookies from "js-cookie";
 import React from "react";
 import ReactDOM from "react-dom";
@@ -13,14 +13,14 @@ const cache = createEmotionCache();
 
 const Main: React.FC = () => {
   return (
-    <ClientSSEProvider value={{ data: window.__PRELOADED_STATE__ }}>
+    <BrowserSCE value={{ data: window.__PRELOADED_STATE__ }}>
       <CacheProvider value={cache}>
         <BrowserRouter>
           <CssBaseline />
           <App darkMode={Cookies.get("darkMode") === "true"} />
         </BrowserRouter>
       </CacheProvider>
-    </ClientSSEProvider>
+    </BrowserSCE>
   );
 };
 
