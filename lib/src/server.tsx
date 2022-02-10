@@ -21,17 +21,18 @@ export function useServerContext<T extends BaseData>() {
   return useContext<ServerContextValue<T>>(ServerContext);
 }
 
-interface CollectDataParams<T extends BaseData, E = unknown> {
+interface CollectDataParams<T extends BaseData, H = unknown> {
   tree: ReactElement;
   data: Partial<T>;
-  helper?: E;
+  helper?: H;
 }
 
 /**
  * A function to render the react tree and collect data from server-side effects.
- * @param param0.tree the react tree to render
- * @param param0.data the object to store result of the super-charged effects
- * @param param0.helper custom helpers that enable the request server-side
+ * @param opts options for the `collectData` function
+ * @param opts.tree the react tree to render
+ * @param opts.data the object to store result of the super-charged effects
+ * @param opts.helper custom helpers that enable the request server-side
  *
  * @example
  * ```tsx
@@ -58,11 +59,11 @@ interface CollectDataParams<T extends BaseData, E = unknown> {
  *
  * @returns the updated react tree with the collected data
  */
-export async function collectData<T extends BaseData, F = unknown>({
+export async function collectData<T extends BaseData, H = unknown>({
   tree,
   data,
   helper,
-}: CollectDataParams<T, F>): Promise<ReactElement> {
+}: CollectDataParams<T, H>): Promise<ReactElement> {
   const state: ServerContextValue = { requests: [], data: {} as T, helper: helper };
   renderToString(<ServerSCE value={state}>{tree}</ServerSCE>);
   await Promise.all(state.requests);
