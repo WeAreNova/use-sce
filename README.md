@@ -25,6 +25,7 @@ It provides an easy way to create and manage preloaded state on the server and i
   - [1. Use the `useSCEffect` hook](#1-use-the-usesceffect-hook)
   - [2. Setup the server](#2-setup-the-server)
   - [3. Setup the client](#3-setup-the-client)
+- [Example - usage with an authenticated API](#example---usage-with-an-authenticated-api)
 - [API - Browser](#api---browser)
   - [useSCEffect](#usesceffect)
   - [usePreloadedState](#usepreloadedstate)
@@ -65,7 +66,7 @@ import useSCEffect from "@wearenova/use-sce";
 const [data, setData] = useState<User[]>([]);
 
 const handleChange = useCallback(async function () {
-  // Remember that the effect runs server-side and so the url cannot just be `/api/data` in this example
+  // remember that the effect runs server-side and so the url cannot just be `/api/data` in this example
   const res = await axios.get<User[]>("http://localhost:3000/api/data");
   setData(res.data);
   return res.data;
@@ -80,6 +81,8 @@ useSCEffect(
 );
 ```
 
+> **Don't want to have to provide the full url like above? Or want to provide authentication tokens and/or any other context? Then have a look at [Example - usage with an authenticated API](#example---usage-with-an-authenticated-api)**
+
 #### 2. Setup the server
 
 After setting up some of the effects, you can then get the data server-side.
@@ -92,18 +95,20 @@ import { collectData } from "@wearenova/use-sce/server";
 const preloadedData: { data: User[] } = { data: [] }; // you can provide any default or other values here
 
 const html = ReactDOMServer.renderToString(
-  await collectData(
-    <StaticRouter location={req.url}>
-      <App />
-    </StaticRouter>,
-    preloadedData, // pass in the `preloadedData` object so it can be populated with the results from the effects
-  ),
+  await collectData({
+    data: preloadedData, // pass in the `preloadedData` object so it can be populated with the results from the effects
+    tree: (
+      <StaticRouter location={req.url}>
+        <App />
+      </StaticRouter>
+    ),
+  })
 );
 
 // preloadedData.data = Array<User>
 ```
 
-After this, `preloadedData` will be populated with the results of the effect (as long as the url is the correct one to display the hook).
+After this, `preloadedData` will be populated with the results of the effect (as long as the page at the url has hooks to display).
 
 You can then do what you want with the preloaded data. For example:
 
@@ -209,6 +214,73 @@ The `usePreloadedState` hook can be used for the preloaded data in the browser o
 
 ---
 
+### Example - usage with an authenticated API
+
+You may find that you have issues if you are making a request to an API/endpoint that requires the user to be authenticated.
+This is because the request is made server-side and does not have access to the browser (to retrieve authentication tokens, cookies etc.).
+
+In this case you are able to provide helpers to the effect server-side, this can then pass through any headers, cookies, or anything you want to be available to the effect when it runs on the server.
+
+For example, you can provide an axios instance as follows:
+
+```tsx
+import { collectData } from "@wearenova/use-sce/server";
+
+....
+
+const preloadedData: { data: User[] } = { data: [] }; // you can provide any default or other values here
+
+const html = ReactDOMServer.renderToString(
+  await collectData({
+    data: preloadedData, // pass in the `preloadedData` object so it can be populated with the results from the effects
+    tree: (
+      <StaticRouter location={req.url}>
+        <App />
+      </StaticRouter>
+    ),
+    // a custom axios instance is passed in, which provides the base url along with some headers originating from the original request.
+    helper: axios.create({
+      baseURL: `${req.protocol}://${req.headers.host}`,
+      headers: {
+        Cookie: req.headers.cookie,
+        Authorization: req.headers.authorization,
+      },
+    }),
+  })
+);
+
+// preloadedData.data = Array<User>
+```
+
+The helper is then made available as an argument to the effect only on the server and can be used like so:
+
+```tsx
+import useSCEffect from "@wearenova/use-sce";
+
+....
+
+const [data, setData] = useState<User[]>([]);
+
+const handleChange = useCallback(async function (helper?: AxiosInstance) {
+  const get = helper ? helper.get : axios.get;
+  const res = await get<User[]>("/api/data"); // notice that we no longer need the full url as we are using the custom axios instance created above
+  setData(res.data);
+  return res.data;
+}, []);
+
+useSCEffect(
+  async function (helper: AxiosInstance) {
+    return handleChange(helper);
+  },
+  [handleChange],
+  "data", // the key location of where to store the return value of the effect
+);
+```
+
+By using the helper field (which can be whatever you would like it to be and is not tied to a specific type), you can help mitigate any issues like the one described above.
+
+---
+
 ### API - Browser
 
 #### useSCEffect
@@ -219,11 +291,11 @@ The **super-charged** `useEffect` hook that allows you to run effects server-sid
 useSCEffect<T>(effect, deps, key);
 ```
 
-| param    | type                       | required? | description                                                           |
-| -------- | -------------------------- | --------- | --------------------------------------------------------------------- |
-| `effect` | `function(): Promise<any>` | yes       | the effect to run                                                     |
-| `deps`   | `any[]`                    | yes       | `effect` will only activate if one of the values in this list changes |
-| `key`    | `string`                   | no        | the key to store the result in the preloaded state                    |
+| param    | type                                  | required? | description                                                           |
+| -------- | ------------------------------------- | --------- | --------------------------------------------------------------------- |
+| `effect` | `function(helper: any): Promise<any>` | yes       | the effect to run                                                     |
+| `deps`   | `any[]`                               | yes       | `effect` will only activate if one of the values in this list changes |
+| `key`    | `string`                              | no        | the key to store the result in the preloaded state                    |
 
 **Returns**
 
@@ -268,14 +340,15 @@ A functional component to handle the set-up of the browser preloaded-state conte
 A function to render the react tree and collect data from the super-charged effects on the server.
 
 ```tsx
-const html = ReactDOMServer.renderToString(await collectData<T>(reactTree, data));
+const html = ReactDOMServer.renderToString(await collectData<T>({ data, tree, helper }));
 ```
 
-| param       | type           | required? | description                                                              |
-| ----------- | -------------- | --------- | ------------------------------------------------------------------------ |
-| `reactTree` | `ReactElement` | yes       | the react tree to render                                                 |
-| `data`      | `Partial<T>`   | yes       | the object to store the results of the rendered super-charged effects in |
+| param    | type           | required? | description                                                                                                                                                                           |
+| -------- | -------------- | --------- | ------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
+| `data`   | `Partial<T>`   | yes       | the object to store the results of the rendered super-charged effects in                                                                                                              |
+| `tree`   | `ReactElement` | yes       | the react tree to render                                                                                                                                                              |
+| `helper` | `any`          | no        | any helpers that you want to pass through to the effects server-side (for example usage, see [Example - usage with an authenticated API](#example---usage-with-an-authenticated-api)) |
 
 **Returns**
 
-Returns the updated React Tree which includes the server `SCEContext` with the preloaded data.
+Returns the updated React Tree which includes the server `SCEContext` with the preloaded data ready to be rendered server-side, to populate anywhere the data is used.
