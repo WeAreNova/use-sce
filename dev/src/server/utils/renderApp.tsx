@@ -2,6 +2,7 @@ import { CacheProvider } from "@emotion/react";
 import createEmotionServer from "@emotion/server/create-instance";
 import { CssBaseline } from "@mui/material";
 import { collectData } from "@wearenova/use-sce/server";
+import axios from "axios";
 import App from "client/App";
 import createEmotionCache from "createEmotionCache";
 import type Express from "express";
@@ -21,20 +22,27 @@ const jsScriptTagsFromAssets = (entrypoint: string, ...extra: string[]) =>
 
 const renderApp = async (req: Express.Request, _res: Express.Response) => {
   const cache = createEmotionCache();
+  console.log(req.headers.host);
   const { extractCriticalToChunks, constructStyleTagsFromChunks } = createEmotionServer(cache);
 
   const data = {};
   const chunks = extractCriticalToChunks(
       renderToString(
-        await collectData(
-          <CacheProvider value={cache}>
-            <StaticRouter location={req.url}>
-              <CssBaseline />
-              <App darkMode={req.cookies.darkMode === "true"} />
-            </StaticRouter>
-          </CacheProvider>,
+        await collectData({
           data,
-        ),
+          tree: (
+            <CacheProvider value={cache}>
+              <StaticRouter location={req.url}>
+                <CssBaseline />
+                <App darkMode={req.cookies.darkMode === "true"} />
+              </StaticRouter>
+            </CacheProvider>
+          ),
+          helper: axios.create({
+            baseURL: `${req.protocol}://${req.headers.host}`,
+            headers: { Cookie: req.headers.cookie! },
+          }),
+        }),
       ),
     ),
     css = constructStyleTagsFromChunks(chunks);

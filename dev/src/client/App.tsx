@@ -5,7 +5,7 @@ import MomentAdapter from "@mui/lab/AdapterMoment";
 import { Box, createTheme, CssBaseline, IconButton, TableContainer, ThemeProvider } from "@mui/material";
 import DataTable, { setDefaultCurrency } from "@wearenova/mui-data-table";
 import useSCEffect, { usePreloadedState } from "@wearenova/use-sce";
-import axios from "axios";
+import axios, { AxiosInstance } from "axios";
 import Cookies from "js-cookie";
 import React, { useCallback, useEffect, useState } from "react";
 import { STRUCTURE, User } from "./utils";
@@ -27,13 +27,14 @@ function App({ darkMode: darkModeProp }: AppProps) {
     Cookies.set("darkMode", JSON.stringify(darkMode));
   }, [darkMode]);
 
-  const handleChange = useCallback(async () => {
-    const res = await axios.get<User[]>("http://localhost:3000/api/data");
+  const handleChange = useCallback(async (helper?: AxiosInstance) => {
+    const ax = typeof helper === "function" ? helper : axios;
+    const res = await ax.get<User[]>("/api/data");
     setData(res.data);
     return res.data;
   }, []);
 
-  useSCEffect(() => handleChange(), [handleChange], "data");
+  useSCEffect((helper: AxiosInstance) => handleChange(helper), [handleChange], "data");
 
   return (
     <ThemeProvider
