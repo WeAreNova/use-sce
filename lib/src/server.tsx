@@ -1,10 +1,7 @@
 import React, { ProviderProps, ReactElement, useContext } from "react";
 import { renderToString } from "react-dom/server";
-import type { BaseData, BrowserContextValue } from "types";
+import type { BaseData, ServerContextValue } from "types";
 
-interface ServerContextValue<T extends BaseData> extends BrowserContextValue<T> {
-  requests: Promise<unknown>[];
-}
 const ServerContext = React.createContext<ServerContextValue<any>>({ requests: [], data: {} });
 ServerContext.displayName = "SCEContext";
 /**
@@ -24,16 +21,49 @@ export function useServerContext<T extends BaseData>() {
   return useContext<ServerContextValue<T>>(ServerContext);
 }
 
+interface CollectDataParams<T extends BaseData, E = unknown> {
+  tree: ReactElement;
+  data: Partial<T>;
+  helper?: E;
+}
+
 /**
  * A function to render the react tree and collect data from server-side effects.
- * @param tree the react tree to render
+ * @param param0.tree the react tree to render
+ * @param param0.data the object to store result of the super-charged effects
+ * @param param0.helper custom helpers that enable the request server-side
+ *
+ * @example
+ * ```tsx
+ * import { collectData } from "@wearenova/use-sce/server";
+ * ....
+ * const preloadedData: { data: User[] } = { data: [] }; // you can provide any default or other values here
+ * const html = ReactDOMServer.renderToString(
+ *   await collectData({
+ *     data: preloadedData, // pass in the `preloadedData` object so it can be populated with the results from the effects
+ *     tree: (
+ *       <StaticRouter location={req.url}>
+ *         <App />
+ *       </StaticRouter>
+ *     ),
+ *     // optionally, you can provide custom helpers that will be made available to the effect server-side
+ *     helper: axios.create({
+ *       baseURL: `${req.protocol}://${req.headers.host}`,
+ *       headers: { Cookie: req.headers.cookie, Authorization: req.headers.authorization },
+ *     }),
+ *   })
+ * );
+ * // preloadedData.data = Array<User>
+ * ```
+ *
  * @returns the updated react tree with the collected data
  */
-export async function collectData<T extends BaseData>(tree: ReactElement, data: Partial<T>): Promise<ReactElement> {
-  const state = {
-    requests: [],
-    data: {} as T,
-  };
+export async function collectData<T extends BaseData, F = unknown>({
+  tree,
+  data,
+  helper,
+}: CollectDataParams<T, F>): Promise<ReactElement> {
+  const state: ServerContextValue = { requests: [], data: {} as T, helper: helper };
   renderToString(<ServerSCE value={state}>{tree}</ServerSCE>);
   await Promise.all(state.requests);
   Object.assign(data, state.data);

@@ -1,6 +1,6 @@
 import React, { createContext, ProviderProps, useContext, useEffect, useMemo } from "react";
 import { useServerContext } from "server";
-import type { BaseData, BrowserContextValue, Effect } from "types";
+import type { BaseData, BrowserContextValue, Effect, ServerContextValue } from "types";
 
 const BrowserContext = createContext<BrowserContextValue<any>>({ data: {} });
 BrowserContext.displayName = "SCEContext";
@@ -45,11 +45,11 @@ export function usePreloadedState<T extends BaseData>(
  * @param param1.context the context to add the data to
  * @param param1.preloadedKey the key to store the result in the preloaded state
  */
-async function serverSideEffect<T extends Effect<unknown>>(
+async function serverSideEffect<T extends Effect>(
   effect: T,
-  { context, preloadedKey }: { context: BrowserContextValue; preloadedKey?: string },
+  { context, preloadedKey }: { context: ServerContextValue; preloadedKey?: string },
 ) {
-  const res = await effect();
+  const res = await effect(context.helper);
   if (preloadedKey) context.data[preloadedKey] = res;
 }
 
@@ -61,7 +61,7 @@ async function serverSideEffect<T extends Effect<unknown>>(
  * @returns `void` if `preloadedKey` is not provided, otherwise the result of the effect
  */
 function useSCEffect<
-  E extends Effect<unknown>,
+  E extends Effect,
   R extends Awaited<ReturnType<E>> | undefined,
   K extends string | undefined = undefined,
   T extends { [key in K]: R } = { [key in K]: R },
