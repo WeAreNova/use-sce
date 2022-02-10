@@ -269,7 +269,7 @@ const handleChange = useCallback(async function (helper?: AxiosInstance) {
 }, []);
 
 useSCEffect(
-  async function (helper: AxiosInstance) {
+  async function (helper?: AxiosInstance) {
     return handleChange(helper);
   },
   [handleChange],
