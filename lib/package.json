@@ -1,6 +1,6 @@
 {
   "name": "@wearenova/use-sce",
-  "version": "1.0.0-alpha.1",
+  "version": "1.0.0",
   "description": "A super-charged React `useEffect` hook for use with server-side rendering to make preloading state a breeze.",
   "source": "src/index.ts",
   "types": "lib/index.d.ts",
