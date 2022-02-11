@@ -9,7 +9,7 @@
 
 A super-charged React `useEffect` hook for use with server-side rendering to make preloading state a breeze.
 
-<!-- [![npm (scoped)](https://img.shields.io/npm/v/@wearenova/use-sce?logo=npm&style=for-the-badge)](https://www.npmjs.com/package/@wearenova/use-sce) [![npm](https://img.shields.io/npm/dm/@wearenova/use-sce?logo=npm&style=for-the-badge)](https://www.npmjs.com/package/@wearenova/use-sce) ![GitHub](https://img.shields.io/github/license/WeAreNova/use-sce?style=for-the-badge) [![GitHub Workflow Status](https://img.shields.io/github/workflow/status/WeAreNova/use-sce/Build%20and%20Publish?logo=github&style=for-the-badge)](https://github.com/WeAreNova/use-sce) -->
+[![npm (scoped)](https://img.shields.io/npm/v/@wearenova/use-sce?logo=npm&style=for-the-badge)](https://www.npmjs.com/package/@wearenova/use-sce) [![npm](https://img.shields.io/npm/dm/@wearenova/use-sce?logo=npm&style=for-the-badge)](https://www.npmjs.com/package/@wearenova/use-sce) ![GitHub](https://img.shields.io/github/license/WeAreNova/use-sce?style=for-the-badge) [![GitHub Workflow Status](https://img.shields.io/github/workflow/status/WeAreNova/use-sce/Build%20and%20Publish?logo=github&style=for-the-badge)](https://github.com/WeAreNova/use-sce)
 
 </div>
 
