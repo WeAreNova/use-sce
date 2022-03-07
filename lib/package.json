@@ -14,9 +14,6 @@
   "bugs": {
     "url": "https://github.com/WeAreNova/use-sce/issues"
   },
-  "scripts": {
-    "test": "echo \"Error: no test specified\" && exit 1"
-  },
   "author": {
     "name": "David Parrish",
     "url": "https://github.com/dvprrsh"
