@@ -69,7 +69,10 @@ function useSCEffect<
   const clientContext = useBrowserContext<T>();
   const serverContext = useServerContext<T>();
 
-  if (typeof window === "undefined" && (!preloadedKey || !serverContext.data.hasOwnProperty(preloadedKey))) {
+  if (
+    typeof window === "undefined" &&
+    (!preloadedKey || !Object.prototype.hasOwnProperty.call(serverContext.data, preloadedKey))
+  ) {
     serverContext.requests.push(serverSideEffect(effect, { context: serverContext, preloadedKey }));
   }
 
