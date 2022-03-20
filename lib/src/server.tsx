@@ -64,7 +64,7 @@ export async function collectData<T extends BaseData, H = unknown>({
   data,
   helper,
 }: CollectDataParams<T, H>): Promise<ReactElement> {
-  const state: ServerContextValue = { requests: [], data: {} as T, helper: helper };
+  const state: ServerContextValue = { requests: [], data, helper };
   renderToString(<ServerSCE value={state}>{tree}</ServerSCE>);
   await Promise.all(state.requests);
   Object.assign(data, state.data);
