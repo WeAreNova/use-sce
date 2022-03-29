@@ -27,18 +27,16 @@ function useBrowserContext<T extends BaseData>() {
  * @param preloadedKey if provided, this hook will return the value at the given key in the preloaded state
  * @returns the preloaded value
  */
-export function usePreloadedState<T extends BaseData>(
-  preloadedKey: keyof T | undefined,
-): typeof preloadedKey extends undefined ? T : T[string & typeof preloadedKey] {
+export function usePreloadedState<T extends BaseData, K extends keyof T | undefined = undefined>(
+  preloadedKey?: K,
+): K extends keyof T ? T[string & K] : T {
   const context = typeof window === "undefined" ? useServerContext<T>() : useBrowserContext<T>();
   return useMemo(
-    () =>
-      (preloadedKey ? context.data[preloadedKey as string] : context.data) as typeof preloadedKey extends undefined
-        ? T
-        : T[string & typeof preloadedKey],
+    () => (preloadedKey ? context.data[preloadedKey as string] : context.data) as K extends keyof T ? T[string & K] : T,
     [],
   );
 }
+
 /**
  * A function to handle the effect server-side.
  * @param effect the effect to run

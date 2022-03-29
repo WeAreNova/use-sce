@@ -18,7 +18,8 @@ setDefaultCurrency("USD");
 
 function App({ darkMode: darkModeProp }: AppProps) {
   const [darkMode, setDarkMode] = useState(darkModeProp);
-  const preloadedData = usePreloadedState<{ data: User[] }>("data");
+  const preloadedData = usePreloadedState<{ data: User[] }, "data">("data");
+  const preloadedState = usePreloadedState<{ data: User[] }>();
   const [data, setData] = useState<User[]>(preloadedData ?? []);
 
   const toggleDarkMode = useCallback(() => setDarkMode((currDarkMode) => !currDarkMode), []);
